@@ -1,1 +1,2 @@
-git clone git@github.com:ZioTino/nvim.git ~/.config && nvim
+Run command:  
+`git clone git@github.com:ZioTino/nvim.git ~/.config && nvim`

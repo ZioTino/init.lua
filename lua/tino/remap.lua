@@ -16,3 +16,6 @@ vim.keymap.set("n", "<leader>Y", [["+Y]])
 
 -- Dont ever press Q idk lol
 vim.keymap.set("n", "Q", "<nop>")
+
+-- Exit from terminal mode
+vim.keymap.set("t", "<Esc>", "<C-\\><C-n><Cmd>ToggleTerm<CR>", { silent = true})

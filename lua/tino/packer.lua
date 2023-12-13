@@ -7,12 +7,9 @@ return require('packer').startup(function(use)
   -- Packer can manage itself
   use 'wbthomason/packer.nvim'
 
-  use({ 
-	  "catppuccin/nvim", 
+  use({
+	  "catppuccin/nvim",
 	  as = "catppuccin",
-	  config = function()
-		  vim.cmd('colorscheme catppuccin')
-	  end
   })
 
   use {

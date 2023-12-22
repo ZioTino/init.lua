@@ -33,6 +33,42 @@ require("mason-lspconfig").setup_handlers {
     --["rust_analyzer"] = function ()
     --    require("rust-tools").setup {}
     --end
+    ["pylsp"] = function ()
+        local venv_path = os.getenv("VIRTUAL_ENV")
+        local py_path = nil
+        if venv_path ~= nil then
+            py_path = venv_path .. "/bin/python3"
+        else
+            py_path = vim.g.python3_host_prog
+        end
+        require("lspconfig")["pylsp"].setup {
+            settings = {
+                pylsp = {
+                    plugins = {
+                        -- formatter options
+                        black = { enabled = true },
+                        autopep8 = { enabled = false },
+                        yapf = { enabled = false },
+                        -- linter options
+                        pylint = { enabled = true, executable = "pylint" },
+                        ruff = { enabled = false },
+                        pyflakes = { enabled = false },
+                        pycodestyle = { enabled = false },
+                        -- type checker
+                        pylsp_mypy = {
+                            enabled = true,
+                            overrides = { "--python-executable", py_path, true },
+                            report_progress = true,
+                            live_mode = false
+                        }
+                    }
+                }
+            },
+            flags = {
+                debounce_text_changes = 200
+            }
+        }
+    end
 }
 
 

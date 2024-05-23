@@ -3,6 +3,13 @@ Run command:
 
 Additional needed steps for a complete working environment:
 
+### Image Preview
+[Chafa](https://hpjansson.org/chafa/download/) needs to be installed:
+
+```bash
+sudo apt install chafa
+```
+
 ### Python
 
 ```bash

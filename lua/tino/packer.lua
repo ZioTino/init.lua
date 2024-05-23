@@ -13,9 +13,13 @@ return require('packer').startup(function(use)
   })
 
   use {
-	  'nvim-telescope/telescope.nvim', tag = '0.1.5',
+	  'nvim-telescope/telescope.nvim', tag = '0.1.7',
 	  -- or                            , branch = '0.1.x',
-	  requires = { {'nvim-lua/plenary.nvim'} }
+	  requires = {
+          {'nvim-lua/popup.nvim'},
+          {'nvim-lua/plenary.nvim'},
+          {'nvim-telescope/telescope-media-files.nvim'},
+      }
   }
 
   use('nvim-treesitter/nvim-treesitter', { run = ':TSUpdate' })

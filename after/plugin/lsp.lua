@@ -19,7 +19,7 @@ end)
 
 require('mason').setup({})
 require('mason-lspconfig').setup({
-    ensure_installed = { "lua_ls", "pylsp" },
+    ensure_installed = { "lua_ls", "pylsp", "rust_analyzer" },
 })
 require("mason-lspconfig").setup_handlers {
     -- The first entry (without a key) will be the default handler
@@ -79,9 +79,23 @@ cmp.setup({
     sources = {
         {name = 'path'},
         {name = 'nvim_lsp'},
+        {name = 'nvim_lsp_signature_help'},
         {name = 'nvim_lua'},
     },
-    formatting = lsp_zero.cmp_format(),
+    -- formatting = lsp_zero.cmp_format(),
+    formatting = {
+        fields = {'menu', 'abbr', 'kind'},
+        format = function(entry, item)
+            local menu_icon = {
+                nvim_lsp = 'λ',
+                vsnip = '⋗',
+                buffer = 'Ω',
+                path = '🖫',
+            }
+            item.menu = menu_icon[entry.source.name]
+            return item
+        end,
+    },
     mapping = cmp.mapping.preset.insert({
         ['<C-p>'] = cmp.mapping.select_prev_item(cmp_select),
         ['<C-n>'] = cmp.mapping.select_next_item(cmp_select),

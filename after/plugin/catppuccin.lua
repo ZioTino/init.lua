@@ -11,8 +11,8 @@ require("catppuccin").setup({
     },
     color_overrides = {
         mocha = {
-            surface1 = "#A0A0A0",
-            surface0 = "#707070",
+            -- surface1 = "#A0A0A0",
+            -- surface0 = "#707070",
         },
     },
 })

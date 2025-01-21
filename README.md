@@ -38,3 +38,10 @@ If working with python venv:
 ```bash
 export PYTHONPATH="$PYTHONPATH:$VIRTUAL_ENV/lib/python<python-version>/site-packages"
 ```
+
+### Rust
+
+Install `codelldb` for debugging:
+```bash
+sudo apt-get install codelldb
+```

@@ -11,7 +11,7 @@ local function custom_attach(bufnr)
     --    vim.keymap.set("n", "<leader>m>", api.tree...
 end
 
-require("nvim-tree").setup{
+require("nvim-tree").setup {
     disable_netrw = true,
     hijack_netrw = true,
     hijack_cursor = true,
@@ -28,6 +28,5 @@ require("nvim-tree").setup{
     }
 }
 
-vim.keymap.set("n", "<leader>b", "<Cmd>:NvimTreeToggle<CR>", { silent = true})
-vim.keymap.set("n", "<leader>n", "<Cmd>:NvimTreeFocus<CR>", { silent = true})
-
+-- vim.keymap.set("n", "<leader>b", "<Cmd>:NvimTreeToggle<CR>", { silent = true})
+vim.keymap.set("n", "<leader>n", "<Cmd>:NvimTreeFocus<CR>", { silent = true })

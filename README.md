@@ -18,6 +18,12 @@ nvim ~/.config/nvim/lua/tino/packer.lua
 sudo apt install chafa
 ```
 
+### Clipboard
+
+```bash
+sudo apt-get install xsel
+```
+
 ### Python
 
 ```bash

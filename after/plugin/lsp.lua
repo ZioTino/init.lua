@@ -3,7 +3,7 @@ local lsp_zero = require('lsp-zero')
 lsp_zero.preset("recommended")
 
 lsp_zero.on_attach(function(client, bufnr)
-    local opts = {buffer = bufnr, remap = false}
+    local opts = { buffer = bufnr, remap = false }
 
     vim.keymap.set("n", "gd", function() vim.lsp.buf.definition() end, opts)
     vim.keymap.set("n", "K", function() vim.lsp.buf.hover() end, opts)
@@ -17,6 +17,8 @@ lsp_zero.on_attach(function(client, bufnr)
     vim.keymap.set("i", "<C-h>", function() vim.lsp.buf.signature_help() end, opts)
 end)
 
+local lspconfig = require('lspconfig')
+
 require('mason').setup({})
 require('mason-lspconfig').setup({
     ensure_installed = { "lua_ls", "pylsp", "rust_analyzer" },
@@ -25,15 +27,15 @@ require("mason-lspconfig").setup_handlers {
     -- The first entry (without a key) will be the default handler
     -- and will be called for each installed server that doesn't have
     -- a dedicated handler.
-    function (server_name) -- default handler (optional)
-        require("lspconfig")[server_name].setup {}
+    function(server_name)  -- default handler (optional)
+        lspconfig[server_name].setup {}
     end,
     -- Next, you can provide a dedicated handler for specific servers.
     -- For example, a handler override for the `rust_analyzer`:
     --["rust_analyzer"] = function ()
     --    require("rust-tools").setup {}
     --end
-    ["pylsp"] = function ()
+    ["pylsp"] = function()
         local venv_path = os.getenv("VIRTUAL_ENV")
         local py_path = nil
         if venv_path ~= nil then
@@ -41,7 +43,7 @@ require("mason-lspconfig").setup_handlers {
         else
             py_path = vim.g.python3_host_prog
         end
-        require("lspconfig")["pylsp"].setup {
+        lspconfig.pylsp.setup {
             settings = {
                 pylsp = {
                     plugins = {
@@ -68,23 +70,26 @@ require("mason-lspconfig").setup_handlers {
                 debounce_text_changes = 200
             }
         }
-    end
+    end,
+    ["rust_analyzer"] = function()
+        lspconfig.rust_analyzer.setup {}
+    end,
 }
 
 
 local cmp = require('cmp')
-local cmp_select = {behavior = cmp.SelectBehavior.Select}
+local cmp_select = { behavior = cmp.SelectBehavior.Select }
 
 cmp.setup({
     sources = {
-        {name = 'path'},
-        {name = 'nvim_lsp'},
-        {name = 'nvim_lsp_signature_help'},
-        {name = 'nvim_lua'},
+        { name = 'path' },
+        { name = 'nvim_lsp' },
+        { name = 'nvim_lsp_signature_help' },
+        { name = 'nvim_lua' },
     },
     -- formatting = lsp_zero.cmp_format(),
     formatting = {
-        fields = {'menu', 'abbr', 'kind'},
+        fields = { 'menu', 'abbr', 'kind' },
         format = function(entry, item)
             local menu_icon = {
                 nvim_lsp = 'λ',
@@ -103,4 +108,3 @@ cmp.setup({
         ['<C-Space>'] = cmp.mapping.complete(),
     }),
 })
-

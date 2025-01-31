@@ -12,7 +12,16 @@ vim.g.rustaceanvim = {
         end,
         -- default_settings = {
         --     -- rust-analyzer language server configuration
-        --     ['rust-analyzer'] = {}
+        --     ['rust-analyzer'] = {
+        --         server = {
+        --             extraEnv = {
+        --                 CARGO_TARGET_DIR = "target/rust-analyzer",
+        --             }
+        --         },
+        --         check = {
+        --             extraArgs = { "--target-dir=target/rust-analyzer" },
+        --         }
+        --     }
         -- }
     },
     -- DAP configuration

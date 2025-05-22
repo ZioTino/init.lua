@@ -8,7 +8,8 @@ local function custom_attach(bufnr)
     api.config.mappings.default_on_attach(bufnr)
 
     -- Custom mappings
-    --    vim.keymap.set("n", "<leader>m>", api.tree...
+    -- vim.keymap.set("n", "<leader>b", "<Cmd>:NvimTreeToggle<CR>", { silent = true})
+    vim.keymap.set("n", "<leader>n", "<Cmd>:NvimTreeFocus<CR>", { silent = true })
 end
 
 require("nvim-tree").setup {
@@ -27,6 +28,3 @@ require("nvim-tree").setup {
         dotfiles = false
     }
 }
-
--- vim.keymap.set("n", "<leader>b", "<Cmd>:NvimTreeToggle<CR>", { silent = true})
-vim.keymap.set("n", "<leader>n", "<Cmd>:NvimTreeFocus<CR>", { silent = true })

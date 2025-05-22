@@ -26,57 +26,36 @@ require('mason-lspconfig').setup({
     ensure_installed = { "lua_ls", "pylsp" },
     automatic_installation = true,
 })
-require("mason-lspconfig").setup_handlers {
-    -- The first entry (without a key) will be the default handler
-    -- and will be called for each installed server that doesn't have
-    -- a dedicated handler.
-    function(server_name) -- default handler (optional)
-        lspconfig[server_name].setup {}
-    end,
-    -- Next, you can provide a dedicated handler for specific servers.
-    -- For example, a handler override for the `rust_analyzer`:
-    --["rust_analyzer"] = function ()
-    --    require("rust-tools").setup {}
-    --end
-    ["pylsp"] = function()
-        local venv_path = os.getenv("VIRTUAL_ENV")
-        local py_path = nil
-        if venv_path ~= nil then
-            py_path = venv_path .. "/bin/python3"
-        else
-            py_path = vim.g.python3_host_prog
-        end
-        lspconfig.pylsp.setup {
-            settings = {
-                pylsp = {
-                    plugins = {
-                        -- formatter options
-                        black = { enabled = true },
-                        autopep8 = { enabled = false },
-                        yapf = { enabled = false },
-                        -- linter options
-                        pylint = { enabled = true, executable = "pylint" },
-                        ruff = { enabled = false },
-                        pyflakes = { enabled = false },
-                        pycodestyle = { enabled = false },
-                        -- type checker
-                        pylsp_mypy = {
-                            enabled = true,
-                            overrides = { "--python-executable", py_path, true },
-                            report_progress = true,
-                            live_mode = false
-                        }
-                    }
+
+vim.lsp.config('pylsp', {
+    settings = {
+        pylsp = {
+            plugins = {
+                -- formatter options
+                black = { enabled = true },
+                autopep8 = { enabled = false },
+                yapf = { enabled = false },
+                -- linter options
+                pylint = { enabled = true, executable = "pylint" },
+                ruff = { enabled = false },
+                pyflakes = { enabled = false },
+                pycodestyle = { enabled = false },
+                -- type checker
+                pylsp_mypy = {
+                    enabled = true,
+                    report_progress = true,
+                    live_mode = false
                 }
-            },
-            flags = {
-                debounce_text_changes = 200
             }
         }
-    end,
-    -- Prevent Mason to load up rust-analyzer
-    ["rust_analyzer"] = function() end
-}
+    },
+    flags = {
+        debounce_text_changes = 200
+    }
+})
+
+-- Prevent Mason to load up rust-analyzer
+vim.lsp.config('rust_analyzer', {})
 
 
 local cmp = require('cmp')

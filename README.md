@@ -3,12 +3,11 @@ Run command:
 
 Additional needed steps for a complete working environment:
 
-### Install Packer dependencies
+### Telescope fully enabled
+[fd](https://github.com/sharkdp/fd) needs to be installed:
+
 ```bash
-git clone --depth 1 https://github.com/wbthomason/packer.nvim ~/.local/share/nvim/site/pack/packer/start/packer.nvim
-nvim ~/.config/nvim/lua/tino/packer.lua
-:so
-:PackerSync
+sudo apt install fd-find
 ```
 
 ### Image Preview
@@ -19,6 +18,7 @@ sudo apt install chafa
 ```
 
 ### Clipboard
+Since we set `unnamedplus` as our clipboard, to ensure it works as expected install `xsel`:
 
 ```bash
 sudo apt-get install xsel

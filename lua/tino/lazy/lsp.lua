@@ -130,14 +130,21 @@ return {
         })
 
         vim.diagnostic.config({
-            -- update_in_insert = true,
+            virtual_text = {
+                prefix = '●', -- Or any character you prefer (e.g., '•', '❗')
+                source = false, -- Show the source of the diagnostic (e.g., 'eslint', 'tsserver')
+                severity_sort = true, -- Sort diagnostics by severity
+            },
+            signs = true, -- Show signs in the sign column (recommended alongside virtual text)
+            underline = true, -- Underline the problematic text
+            update_in_insert = false, -- Don't update diagnostics in insert mode (can be noisy)
             float = {
                 focusable = false,
                 style = "minimal",
                 border = "rounded",
-                source = true,
+                source = false,
                 header = "",
-                prefix = "",
+                prefix = '●', -- Or any character you prefer (e.g., '•', '❗')
             },
         })
     end

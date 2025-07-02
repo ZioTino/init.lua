@@ -47,85 +47,100 @@ return {
             vim.keymap.set("n", "<leader>B", function()
                 dap.set_breakpoint(vim.fn.input("Breakpoint condition: "))
             end, { desc = "Debug: Set Conditional Breakpoint" })
+
+            vim.fn.sign_define("DapBreakpoint", { text = "●", texthl = "DapBreakpoint", linehl = "", numhl = "" })
+            vim.fn.sign_define("DapBreakpointCondition",
+                { text = "●", texthl = "DapBreakpointCondition", linehl = "", numhl = "" })
+            vim.fn.sign_define("DapLogPoint", { text = "◆", texthl = "DapLogPoint", linehl = "", numhl = "" })
+            vim.fn.sign_define("DapStopped", { text = "", texthl = "Search", linehl = "Search", numhl = "Search" })
+            vim.fn.sign_define("DapBreakpointRejected", { text = "●", texthl = "DapBreakpoint", linehl = "", numhl = "" })
+
+            require("overseer").enable_dap()
+            require("dap.ext.vscode").load_launchjs()
         end
     },
-
-
     {
         "rcarriga/nvim-dap-ui",
-        dependencies = { "mfussenegger/nvim-dap", "nvim-neotest/nvim-nio" },
+        dependencies = {
+            "jay-babu/mason-nvim-dap.nvim",
+            "mfussenegger/nvim-dap",
+            "nvim-neotest/nvim-nio",
+            "mfussenegger/nvim-dap-python",
+            "stevearc/overseer.nvim",
+            "akinsho/toggleterm.nvim",
+        },
         config = function()
             local dap = require("dap")
             local dapui = require("dapui")
-            local function layout(name)
-                return {
-                    elements = {
-                        { id = name },
-                    },
-                    enter = true,
-                    size = 40,
-                    position = "right",
-                }
-            end
-            local name_to_layout = {
-                repl = { layout = layout("repl"), index = 0 },
-                stacks = { layout = layout("stacks"), index = 0 },
-                scopes = { layout = layout("scopes"), index = 0 },
-                console = { layout = layout("console"), index = 0 },
-                watches = { layout = layout("watches"), index = 0 },
-                breakpoints = { layout = layout("breakpoints"), index = 0 },
-            }
-            local layouts = {}
 
-            for name, config in pairs(name_to_layout) do
-                table.insert(layouts, config.layout)
-                name_to_layout[name].index = #layouts
-            end
-
-            local function toggle_debug_ui(name)
-                dapui.close()
-                local layout_config = name_to_layout[name]
-
-                if layout_config == nil then
-                    error(string.format("bad name: %s", name))
-                end
-
-                local uis = vim.api.nvim_list_uis()[1]
-                if uis ~= nil then
-                    layout_config.size = uis.width
-                end
-
-                pcall(dapui.toggle, layout_config.index)
-            end
-
-            vim.keymap.set("n", "<leader>dr", function() toggle_debug_ui("repl") end, { desc = "Debug: toggle repl ui" })
-            vim.keymap.set("n", "<leader>ds", function() toggle_debug_ui("stacks") end,
-                { desc = "Debug: toggle stacks ui" })
-            vim.keymap.set("n", "<leader>dw", function() toggle_debug_ui("watches") end,
-                { desc = "Debug: toggle watches ui" })
-            vim.keymap.set("n", "<leader>db", function() toggle_debug_ui("breakpoints") end,
-                { desc = "Debug: toggle breakpoints ui" })
-            vim.keymap.set("n", "<leader>dS", function() toggle_debug_ui("scopes") end,
-                { desc = "Debug: toggle scopes ui" })
-            vim.keymap.set("n", "<leader>dc", function() toggle_debug_ui("console") end,
-                { desc = "Debug: toggle console ui" })
+            vim.keymap.set("n", "<leader>dt", function() require("dapui").toggle() end,
+                { desc = "Debug: toggle ui" })
 
             vim.api.nvim_create_autocmd("BufEnter", {
                 group = "DapGroup",
-                pattern = "*dap-repl*",
+                pattern = "dap-repl-*",
                 callback = function()
                     vim.wo.wrap = true
                 end,
             })
 
             vim.api.nvim_create_autocmd("BufWinEnter", create_nav_options("dap-repl"))
+
             vim.api.nvim_create_autocmd("BufWinEnter", create_nav_options("DAP Watches"))
 
+            local augroup = vim.api.nvim_create_augroup('DapReplAutoScroll', { clear = true })
+            vim.api.nvim_create_autocmd({ "BufEnter", "BufWinEnter", "TextChanged", "TextChangedI" }, {
+                group = augroup,
+                pattern = "dap-repl-*", -- Target the nvim-dap-ui REPL buffer name
+                callback = function()
+                    -- Idk lol
+                    dap.repl.follow = true
+
+                    -- Check if the current buffer is indeed the dapui_repl
+                    -- This adds a layer of safety, though 'pattern' should largely handle it.
+                    if vim.bo.buftype == '' and vim.fn.bufname(0):match('^dap%-repl%-%d+$') then
+                        -- Get current window ID to ensure we're targeting the right window
+                        local winid = vim.api.nvim_get_current_win()
+
+                        -- Check if the buffer is valid and belongs to dapui_repl
+                        if vim.api.nvim_win_get_buf(winid) == vim.api.nvim_get_current_buf() then
+                            -- This command scrolls to the bottom of the buffer
+                            vim.cmd('normal! G')
+                        end
+                    end
+                end,
+                desc = 'Auto-scroll nvim-dap-ui REPL to bottom',
+            })
+
             dapui.setup({
-                layouts = layouts,
+                layouts = {
+                    {
+                        elements = {
+                            { id = "scopes",      size = 0.50 },
+                            { id = "breakpoints", size = 0.20 },
+                            { id = "stacks",      size = 0.15 },
+                            { id = "watches",     size = 0.15 },
+                        },
+                        position = "left",
+                        size = 40,
+                    },
+                    {
+                        elements = {
+                            { id = "repl", size = 1 },
+                        },
+                        position = "bottom",
+                        size = 25,
+                    },
+                },
                 enter = true,
             })
 
+            dap.listeners.before.attach.dapui_config = function()
+                dapui.open()
+            end
+            dap.listeners.before.launch.dapui_config = function()
+                dapui.open()
+            end
             dap.listeners.before.event_terminated.dapui_config = function()
                 dapui.close()
             end
@@ -135,12 +150,22 @@ return {
 
             dap.listeners.after.event_output.dapui_config = function(_, body)
                 if body.category == "console" then
-                    dapui.eval(body.output) -- Sends stdout/stderr to Console
+                    dapui.eval(body.output) -- Sends console (error?) to Tooltip
+                elseif body.category == "stdout" or body.category == "stderr" then
+
                 end
+            end
+
+            dap.listeners.on_config["dummy-noop"] = function(config)
+                local final = vim.deepcopy(config)
+                final.console = "integratedTerminal"
+                final.justMyCode = false
+                final.redirectOutput = true
+                final.stopOnEntry = true
+                return final
             end
         end,
     },
-
     {
         "jay-babu/mason-nvim-dap.nvim",
         dependencies = {
@@ -151,34 +176,65 @@ return {
         config = function()
             require("mason-nvim-dap").setup({
                 ensure_installed = {
-                    "delve",
+                    "python",
                 },
                 automatic_installation = true,
                 handlers = {
                     function(config)
                         require("mason-nvim-dap").default_setup(config)
                     end,
-                    delve = function(config)
-                        table.insert(config.configurations, 1, {
-                            args = function() return vim.split(vim.fn.input("args> "), " ") end,
-                            type = "delve",
-                            name = "file",
-                            request = "launch",
-                            program = "${file}",
-                            outputMode = "remote",
-                        })
-                        table.insert(config.configurations, 1, {
-                            args = function() return vim.split(vim.fn.input("args> "), " ") end,
-                            type = "delve",
-                            name = "file args",
-                            request = "launch",
-                            program = "${file}",
-                            outputMode = "remote",
-                        })
-                        require("mason-nvim-dap").default_setup(config)
-                    end,
                 },
             })
+            require("dap").adapters.python = function(cb, config)
+                if config.request == "attach" then
+                    local port = (config.connect or config).port
+                    local host = (config.connect or config).host or '127.0.0.1'
+                    cb {
+                        type = "server",
+                        port = assert(
+                            port,
+                            '`connect.port` is required for a python `attach` configuration'
+                        ),
+                        host = host,
+                        options = {
+                            source_filetype = 'python',
+                        },
+                    }
+                else
+                    local venv_path = os.getenv("VIRTUAL_ENV")
+                    local py_path = nil
+                    if venv_path ~= nil then
+                        py_path = venv_path .. "/bin/python3"
+                    else
+                        py_path = vim.g.python3_host_prog
+                    end
+                    cb {
+                        type = "executable",
+                        command = py_path,
+                        args = { "-m", "debugpy.adapter" },
+                        options = {
+                            source_filetype = "python",
+                        },
+                    }
+                end
+            end
         end,
     },
+    {
+        "mfussenegger/nvim-dap-python",
+        lazy = true,
+        config = function()
+            local dap_python = require("dap-python")
+            local python = vim.fn.expand("~/.local/share/nvim/mason/packages/debugpy/venv/bin/python")
+            dap_python.setup(python, {
+                include_configs = true,
+                console = "integratedTerminal",
+                pythonPath = nil,
+            })
+        end,
+        dependencies = {
+            "mfussenegger/nvim-dap",
+            "jay-babu/mason-nvim-dap.nvim",
+        },
+    }
 }

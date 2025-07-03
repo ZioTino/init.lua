@@ -73,12 +73,9 @@ return {
             local dap = require("dap")
             local dapui = require("dapui")
 
-            vim.keymap.set("n", "<leader>dt", function() require("dapui").toggle() end,
-                { desc = "Debug: toggle ui" })
-
             vim.api.nvim_create_autocmd("BufEnter", {
                 group = "DapGroup",
-                pattern = "dap-repl-*",
+                pattern = "*dap-repl*",
                 callback = function()
                     vim.wo.wrap = true
                 end,
@@ -88,52 +85,25 @@ return {
 
             vim.api.nvim_create_autocmd("BufWinEnter", create_nav_options("DAP Watches"))
 
-            local augroup = vim.api.nvim_create_augroup('DapReplAutoScroll', { clear = true })
-            vim.api.nvim_create_autocmd({ "BufEnter", "BufWinEnter", "TextChanged", "TextChangedI" }, {
-                group = augroup,
-                pattern = "dap-repl-*", -- Target the nvim-dap-ui REPL buffer name
-                callback = function()
-                    -- Idk lol
-                    dap.repl.follow = true
-
-                    -- Check if the current buffer is indeed the dapui_repl
-                    -- This adds a layer of safety, though 'pattern' should largely handle it.
-                    if vim.bo.buftype == '' and vim.fn.bufname(0):match('^dap%-repl%-%d+$') then
-                        -- Get current window ID to ensure we're targeting the right window
-                        local winid = vim.api.nvim_get_current_win()
-
-                        -- Check if the buffer is valid and belongs to dapui_repl
-                        if vim.api.nvim_win_get_buf(winid) == vim.api.nvim_get_current_buf() then
-                            -- This command scrolls to the bottom of the buffer
-                            vim.cmd('normal! G')
-                        end
-                    end
-                end,
-                desc = 'Auto-scroll nvim-dap-ui REPL to bottom',
-            })
-
             dapui.setup({
                 layouts = {
-                    {
-                        elements = {
-                            { id = "scopes",      size = 0.50 },
-                            { id = "breakpoints", size = 0.20 },
-                            { id = "stacks",      size = 0.15 },
-                            { id = "watches",     size = 0.15 },
-                        },
-                        position = "left",
-                        size = 40,
+                    elements = {
+                        { id = "scopes",      size = 0.50 },
+                        { id = "breakpoints", size = 0.20 },
+                        { id = "stacks",      size = 0.15 },
+                        { id = "watches",     size = 0.15 },
                     },
-                    {
-                        elements = {
-                            { id = "repl", size = 1 },
-                        },
-                        position = "bottom",
-                        size = 25,
-                    },
+                    position = "right",
+                    size = 40,
+                    enter = true,
                 },
                 enter = true,
             })
+
+            vim.keymap.set("n", "<leader>dt", function()
+                    dapui.toggle()
+                end,
+                { desc = "Debug: toggle ui" })
 
             dap.listeners.before.attach.dapui_config = function()
                 dapui.open()
@@ -151,8 +121,6 @@ return {
             dap.listeners.after.event_output.dapui_config = function(_, body)
                 if body.category == "console" then
                     dapui.eval(body.output) -- Sends console (error?) to Tooltip
-                elseif body.category == "stdout" or body.category == "stderr" then
-
                 end
             end
 

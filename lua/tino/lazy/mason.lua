@@ -5,7 +5,6 @@ return {
             ensure_installed = {
                 "codelldb",
                 "cpptools",
-                "rust-analyzer",
                 "python-lsp-server",
                 "debugpy",
                 "lua-language-server",

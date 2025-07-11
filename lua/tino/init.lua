@@ -4,19 +4,18 @@ require("tino.lazy_init")
 require("tino.lsp")
 
 local augroup = vim.api.nvim_create_augroup
-local TinoGroup = augroup('Tino', {})
+local TinoGroup = augroup("Tino", {})
 
 local autocmd = vim.api.nvim_create_autocmd
-local yank_group = augroup('HighlightYank', {})
 
 -- Override line number color
 -- The one from catppuccin does not work well with my background
-autocmd({ 'BufEnter', 'BufWinEnter' }, {
+autocmd({ "BufEnter", "BufWinEnter" }, {
     group = TinoGroup,
     command = "highlight LineNr guifg=#A0A0A0"
 })
 
-autocmd('LspAttach', {
+autocmd("LspAttach", {
     group = TinoGroup,
     callback = function(e)
         local opts = { buffer = e.buf }

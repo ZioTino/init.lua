@@ -1,6 +1,7 @@
 require("tino.remap")
 require("tino.set")
 require("tino.lazy_init")
+require("tino.lsp")
 
 local augroup = vim.api.nvim_create_augroup
 local TinoGroup = augroup('Tino', {})

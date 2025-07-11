@@ -9,14 +9,6 @@ local TinoGroup = augroup('Tino', {})
 local autocmd = vim.api.nvim_create_autocmd
 local yank_group = augroup('HighlightYank', {})
 
--- Format on save
-autocmd({ 'BufWritePre' }, {
-    group = TinoGroup,
-    callback = function()
-        vim.lsp.buf.format()
-    end
-})
-
 -- Override line number color
 -- The one from catppuccin does not work well with my background
 autocmd({ 'BufEnter', 'BufWinEnter' }, {

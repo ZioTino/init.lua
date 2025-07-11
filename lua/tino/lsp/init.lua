@@ -1,6 +1,5 @@
 require("tino.lsp.lua_ls")
 require("tino.lsp.pylsp")
-require("tino.lsp.rust_analyzer")
 
 -- Configure diagnostics
 vim.diagnostic.config({
@@ -26,5 +25,5 @@ vim.diagnostic.config({
 vim.lsp.enable({
     "lua_ls",
     "pylsp",
-    "rust_analyzer",
+    -- "rust_analyzer", -- We don't need to enable it here since rustaceanvim takes care of everything
 })

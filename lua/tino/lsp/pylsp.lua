@@ -1,3 +1,5 @@
+local on_attach = require("tino.lsp.utils").on_attach
+
 local cmp_lsp = require("cmp_nvim_lsp")
 
 -- Get venv path if applicable instead of global python path
@@ -31,6 +33,13 @@ vim.lsp.config.pylsp = {
     cmd = { "pylsp" },
     filetypes = { "python" },
     root_markers = { "pyproject.toml", "setup.py", "setup.cfg", "requirements.txt", "Pipfile", ".git" },
+    capabilities = vim.tbl_deep_extend(
+        "force",
+        {},
+        vim.lsp.protocol.make_client_capabilities(),
+        cmp_lsp.default_capabilities()
+    ),
+    on_attach = on_attach,
     settings = {
         pylsp = {
             configurationSources = { "flake8", "pycodestyle", "pylint" }, -- Order of precedence
@@ -77,6 +86,4 @@ vim.lsp.config.pylsp = {
             },
         },
     },
-    capabilities = vim.tbl_deep_extend("force", {}, vim.lsp.protocol.make_client_capabilities(),
-        cmp_lsp.default_capabilities()),
 }

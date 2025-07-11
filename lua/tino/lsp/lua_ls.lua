@@ -1,9 +1,17 @@
-local cmp_lsp = require("cmp_nvim_lsp")
+local on_attach = require("tino.lsp.utils").on_attach
 
+local cmp_lsp = require("cmp_nvim_lsp")
 vim.lsp.config.lua_ls = {
     cmd = { "lua-language-server" },
     filetypes = { "lua" },
     root_markers = { ".luarc.json", ".luarc.jsonc", ".luacheckrc", ".stylua.toml", "stylua.toml", "selene.toml", "selene.yml", ".git" },
+    capabilities = vim.tbl_deep_extend(
+        "force",
+        {},
+        vim.lsp.protocol.make_client_capabilities(),
+        cmp_lsp.default_capabilities()
+    ),
+    on_attach = on_attach,
     settings = {
         Lua = {
             runtime = {
@@ -37,6 +45,4 @@ vim.lsp.config.lua_ls = {
             }
         },
     },
-    capabilities = vim.tbl_deep_extend("force", {}, vim.lsp.protocol.make_client_capabilities(),
-        cmp_lsp.default_capabilities()),
 }

@@ -3,6 +3,10 @@ local utils = require("tino.lsp.utils")
 return {
     'mrcjkb/rustaceanvim',
     version = '^6', -- Recommended
+    dependencies = {
+        "mfussenegger/nvim-dap",
+        "jay-babu/mason-nvim-dap.nvim",
+    },
     init = function()
         vim.g.rustaceanvim = {
             -- Plugin configuration

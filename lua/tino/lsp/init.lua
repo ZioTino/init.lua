@@ -1,5 +1,6 @@
-require("tino.lsp.lua_ls")
-require("tino.lsp.pylsp")
+require("tino.lsp.lua")
+require("tino.lsp.python")
+require("tino.lsp.json")
 
 -- Configure diagnostics
 vim.diagnostic.config({
@@ -23,7 +24,8 @@ vim.diagnostic.config({
 
 -- Enable LSP configured servers
 vim.lsp.enable({
-    "lua_ls",
-    "pylsp",
+    "lua_ls",  -- lua
+    "pylsp",   -- python
     -- "rust_analyzer", -- We don't need to enable it here since rustaceanvim takes care of everything
+    "json_ls", -- json
 })

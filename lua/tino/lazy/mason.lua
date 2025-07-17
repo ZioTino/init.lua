@@ -8,6 +8,7 @@ return {
                 "python-lsp-server",
                 "debugpy",
                 "lua-language-server",
+                "json-lsp"
             },
         })
     end,

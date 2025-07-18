@@ -127,9 +127,9 @@ return {
             dap.listeners.on_config["dummy-noop"] = function(config)
                 local final = vim.deepcopy(config)
                 final.console = "integratedTerminal"
-                final.justMyCode = false
+                -- final.justMyCode = false
                 final.redirectOutput = true
-                final.stopOnEntry = true
+                -- final.stopOnEntry = true
                 return final
             end
         end,

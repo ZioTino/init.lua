@@ -82,28 +82,36 @@ return {
             })
 
             vim.api.nvim_create_autocmd("BufWinEnter", create_nav_options("dap-repl"))
-
             vim.api.nvim_create_autocmd("BufWinEnter", create_nav_options("DAP Watches"))
 
             dapui.setup({
+                force_buffers = true,
                 layouts = {
-                    elements = {
-                        { id = "scopes",      size = 0.50 },
-                        { id = "breakpoints", size = 0.20 },
-                        { id = "stacks",      size = 0.15 },
-                        { id = "watches",     size = 0.15 },
+                    {
+                        elements = {
+                            { id = "scopes",      size = 0.50 },
+                            { id = "breakpoints", size = 0.20 },
+                            { id = "stacks",      size = 0.15 },
+                            { id = "watches",     size = 0.15 },
+                        },
+                        position = "right",
+                        size = 35,
                     },
-                    position = "right",
-                    size = 40,
-                    enter = true,
+                    {
+                        elements = {
+                            { id = "console", size = 0.70 },
+                            { id = "repl",    size = 0.30 },
+                        },
+                        position = "bottom",
+                        size = 25,
+                    }
                 },
-                enter = true,
             })
 
-            vim.keymap.set("n", "<leader>dt", function()
-                    dapui.toggle()
-                end,
-                { desc = "Debug: toggle ui" })
+            vim.keymap.set("n", "<leader>dt", function() dapui.toggle("sidebar") end,
+                { desc = "Debug: toggle sidebar ui" })
+            vim.keymap.set("n", "<leader>dc", function() dapui.toggle("tray") end, { desc = "Debug: toggle tray ui" })
+            vim.keymap.set("n", "<leader>dr", function() dap.repl.toggle() end, { desc = "Debug: toggle repl" })
 
             dap.listeners.before.attach.dapui_config = function()
                 dapui.open()
@@ -127,9 +135,7 @@ return {
             dap.listeners.on_config["dummy-noop"] = function(config)
                 local final = vim.deepcopy(config)
                 final.console = "integratedTerminal"
-                -- final.justMyCode = false
                 final.redirectOutput = true
-                -- final.stopOnEntry = true
                 return final
             end
         end,

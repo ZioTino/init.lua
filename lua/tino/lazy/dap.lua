@@ -1,3 +1,5 @@
+local utils = require("tino.lsp.utils")
+
 vim.api.nvim_create_augroup("DapGroup", { clear = true })
 
 local function navigate(args)
@@ -95,12 +97,12 @@ return {
                             { id = "watches",     size = 0.15 },
                         },
                         position = "right",
-                        size = 35,
+                        size = 40,
                     },
                     {
                         elements = {
-                            { id = "console", size = 0.70 },
-                            { id = "repl",    size = 0.30 },
+                            { id = "console", size = 0.40 },
+                            { id = "repl",    size = 0.60 },
                         },
                         position = "bottom",
                         size = 25,
@@ -159,39 +161,6 @@ return {
                     end,
                 },
             })
-            require("dap").adapters.python = function(cb, config)
-                if config.request == "attach" then
-                    local port = (config.connect or config).port
-                    local host = (config.connect or config).host or '127.0.0.1'
-                    cb {
-                        type = "server",
-                        port = assert(
-                            port,
-                            '`connect.port` is required for a python `attach` configuration'
-                        ),
-                        host = host,
-                        options = {
-                            source_filetype = 'python',
-                        },
-                    }
-                else
-                    local venv_path = os.getenv("VIRTUAL_ENV")
-                    local py_path = nil
-                    if venv_path ~= nil then
-                        py_path = venv_path .. "/bin/python3"
-                    else
-                        py_path = vim.g.python3_host_prog
-                    end
-                    cb {
-                        type = "executable",
-                        command = py_path,
-                        args = { "-m", "debugpy.adapter" },
-                        options = {
-                            source_filetype = "python",
-                        },
-                    }
-                end
-            end
         end,
     },
     {
@@ -199,11 +168,16 @@ return {
         lazy = true,
         config = function()
             local dap_python = require("dap-python")
-            local python = vim.fn.expand("~/.local/share/nvim/mason/packages/debugpy/venv/bin/python")
-            dap_python.setup(python, {
+            local path = utils.python.path
+            if utils.python.is_executable_installed("debugpy-adapter") then
+                path = utils.python.get_executable_path("debugpy-adapter")
+            end
+
+            dap_python.setup(path, {
                 include_configs = true,
-                console = "integratedTerminal",
-                pythonPath = nil,
+                -- console = "integratedTerminal",
+                -- redirectOutput = true,
+                pythonPath = utils.python.path,
             })
         end,
         dependencies = {

@@ -1,32 +1,5 @@
 local utils = require("tino.lsp.utils")
 
--- Get venv path if applicable instead of global python path
--- Since we use pyenv python versions might be different
-local venv_path = os.getenv("VIRTUAL_ENV")
-local py_path = nil
-if venv_path ~= nil then
-    py_path = venv_path .. "/bin/python3"
-else
-    py_path = vim.g.python3_host_prog
-end
-
--- Mason default location
-local mason_path = vim.fn.stdpath("data") .. "/mason"
-
--- Function to get executable path based on priorities:
--- First checks if is installed in venv
--- Then it checks if is installed in Mason
--- Else it fallbacks to the default location if any.
-local get_executable_path = function(executable)
-    local path = "/bin/" .. executable
-    if venv_path ~= nil then
-        return venv_path .. path
-    elseif mason_path ~= nil then
-        return mason_path .. path
-    end
-    return executable
-end
-
 vim.lsp.config.pylsp = {
     cmd = { "pylsp" },
     filetypes = { "python" },
@@ -39,19 +12,22 @@ vim.lsp.config.pylsp = {
             plugins = {
                 autopep8 = { enabled = true, },                           -- Disabling requires to use `yapf`
                 flake8 = {
-                    enabled = true,
-                    executable = get_executable_path("flake8"),
+                    enabled = utils.python.is_executable_installed("flake8"),
+                    executable = utils.python.get_executable_path("flake8"),
                 },
                 mccabe = {
                     enabled = true,
                     threshold = 15, -- The minimum threshold that triggers warnings about cyclomatic complexity.
                 },
-                pycodestyle = { enabled = true, },
+                pycodestyle = {
+                    enabled = utils.python.is_executable_installed("pycodestyle"),
+                    maxLineLength = 100 -- Never above 100.
+                },
                 pydocstyle = { enabled = true, },
                 pyflakes = { enabled = true, },
                 pylint = {
-                    enabled = false,
-                    executable = get_executable_path("pylint"),
+                    enabled = utils.python.is_executable_installed("pylint"),
+                    executable = utils.python.get_executable_path("pylint"),
                 },
                 rope_autoimport = { enabled = false, },
                 rope_completion = { enabled = true, },

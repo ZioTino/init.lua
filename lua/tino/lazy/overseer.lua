@@ -11,7 +11,7 @@ return {
             strategy = {
                 "toggleterm",
                 use_shell = true,
-                direction = "horizontal",
+                direction = "float",
                 auto_scroll = true,
                 close_on_exit = true,
                 quit_on_exit = "success",

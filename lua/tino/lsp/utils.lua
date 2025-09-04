@@ -42,7 +42,11 @@ end
 local venv_path = os.getenv("VIRTUAL_ENV")
 local py_path = nil
 if venv_path ~= nil then
-    py_path = venv_path .. "/bin/python3"
+    if os.getenv("OS") == "Windows_NT" then
+        py_path = venv_path .. "\\Scripts\\python.exe"
+    else
+        py_path = venv_path .. "/bin/python3"
+    end
 else
     py_path = vim.g.python3_host_prog
 end
@@ -55,7 +59,12 @@ local mason_path = vim.fn.stdpath("data") .. "/mason"
 -- Then it checks if is installed in Mason
 -- Else it fallbacks to the default location if any.
 local get_executable_path = function(executable)
-    local path = "/bin/" .. executable
+    local path = nil
+    if os.getenv("OS") == "Windows_NT" then
+        path = "\\Scripts\\" .. executable .. ".exe"
+    else
+        path = "/bin/" .. executable
+    end
     if venv_path ~= nil then
         return venv_path .. path
     elseif is_directory(mason_path) and exists(mason_path .. path) ~= nil then
@@ -69,13 +78,7 @@ end
 --- Then it looks in Mason path
 --- Else it looks in default bin path, so if executable is installed globally it returns true.
 local is_executable_installed = function(executable)
-    local path = "/bin/" .. executable
-    if venv_path ~= nil then
-        return exists(venv_path .. path) ~= nil
-    elseif is_directory(mason_path) then
-        return exists(mason_path .. path) ~= nil
-    end
-    return false
+    return exists(get_executable_path(executable)) ~= nil
 end
 
 return {

@@ -40,6 +40,8 @@ vim.opt.isfname:append("@-@")
 
 vim.opt.updatetime = 50
 
---vim.opt.colorcolumn = "80"
+-- Set clipboard
+vim.api.nvim_set_option_value("clipboard", "unnamedplus", {})
 
-vim.g.mapleader = " "
+-- Hide blank lines (or end of file lines, '~')
+vim.api.nvim_set_option_value("fillchars", "eob: ", {})

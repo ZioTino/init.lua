@@ -1,10 +1,5 @@
 vim.g.mapleader = " "
 
--- Set clipboard
-vim.api.nvim_set_option_value("clipboard", "unnamedplus", {})
-
--- vim.keymap.set("n", "<leader>m", vim.cmd.Ex)
-
 vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv")
 vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv")
 

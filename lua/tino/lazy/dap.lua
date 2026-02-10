@@ -58,7 +58,6 @@ return {
             vim.fn.sign_define("DapBreakpointRejected", { text = "●", texthl = "DapBreakpoint", linehl = "", numhl = "" })
 
             require("overseer").enable_dap()
-            require("dap.ext.vscode").load_launchjs()
         end
     },
     {

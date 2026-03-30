@@ -38,10 +38,22 @@ vim.opt.scrolloff = 8
 vim.opt.signcolumn = "yes"
 vim.opt.isfname:append("@-@")
 
-vim.opt.updatetime = 50
+vim.opt.updatetime = 100
 
 -- Set clipboard
-vim.api.nvim_set_option_value("clipboard", "unnamedplus", {})
+-- vim.api.nvim_set_option_value("clipboard", "unnamedplus", {})
+vim.o.clipboard = "unnamedplus"
+vim.g.clipboard = {
+    name = "OSC 52",
+    copy = {
+        ["+"] = require("vim.ui.clipboard.osc52").copy("+"),
+        ["*"] = require("vim.ui.clipboard.osc52").copy("*"),
+    },
+    paste = {
+        ["+"] = require("vim.ui.clipboard.osc52").paste("+"),
+        ["*"] = require("vim.ui.clipboard.osc52").paste("*"),
+    },
+}
 
 -- Hide blank lines (or end of file lines, '~')
 vim.api.nvim_set_option_value("fillchars", "eob: ", {})

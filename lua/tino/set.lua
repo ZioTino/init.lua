@@ -5,7 +5,15 @@ local user_home
 -- On Windows, 'HOMEPATH' and 'HOMEDRIVE' are typically used together for the home directory.
 -- %USERPROFILE% is a more direct equivalent to HOME on Windows.
 if os.getenv('OS') == 'Windows_NT' then
+    local progfiles = vim.fn.expand("$PROGRAMFILES"):gsub('\\', '/')
+    local git_bash = '"' .. progfiles .. '/Git/bin/bash.exe"'
     user_home = os.getenv('USERPROFILE')
+    if vim.fn.executable(progfiles .. '/Git/bin/bash.exe') == 1 then
+        vim.opt.shell = git_bash
+        vim.opt.shellcmdflag = '-c'
+        vim.opt.shellquote = ''
+        vim.opt.shellxquote = ''
+    end
 else
     user_home = os.getenv('HOME')
 end
@@ -50,8 +58,21 @@ vim.g.clipboard = {
         ["*"] = require("vim.ui.clipboard.osc52").copy("*"),
     },
     paste = {
-        ["+"] = require("vim.ui.clipboard.osc52").paste("+"),
-        ["*"] = require("vim.ui.clipboard.osc52").paste("*"),
+        ["+"] = function()
+            if os.getenv('OS') == 'Windows_NT' then
+                return vim.split(vim.fn.system('powershell.exe -NoProfile -command "Get-Clipboard"'), '\n')
+            else
+                return require("vim.ui.clipboard.osc52").paste("+")
+            end
+        end,
+        ["*"] = function()
+            if os.getenv('OS') == 'Windows_NT' then
+                return vim.split(vim.fn.system('powershell.exe -NoProfile -command "Get-Clipboard"'), '\n')
+            else
+                return require("vim.ui.clipboard.osc52").paste("*")
+            end
+        end,
+
     },
 }
 

@@ -87,10 +87,10 @@ return {
     exists = exists,
     is_directory = is_directory,
     mason_path = mason_path,
+    get_executable_path = get_executable_path,
+    is_executable_installed = is_executable_installed,
     python = {
         path = py_path,
         venv_path = venv_path,
-        get_executable_path = get_executable_path,
-        is_executable_installed = is_executable_installed,
     }
 }

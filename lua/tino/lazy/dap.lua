@@ -168,8 +168,8 @@ return {
         config = function()
             local dap_python = require("dap-python")
             local path = utils.python.path
-            if utils.python.is_executable_installed("debugpy-adapter") then
-                path = utils.python.get_executable_path("debugpy-adapter")
+            if utils.is_executable_installed("debugpy-adapter") then
+                path = utils.get_executable_path("debugpy-adapter")
             end
 
             dap_python.setup(path, {

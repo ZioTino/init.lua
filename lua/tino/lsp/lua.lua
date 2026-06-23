@@ -1,7 +1,7 @@
 local utils = require("tino.lsp.utils")
 
 vim.lsp.config.lua_ls = {
-    cmd = { "lua-language-server" },
+    cmd = { utils.get_executable_path("lua-language-server") },
     filetypes = { "lua" },
     root_markers = { ".luarc.json", ".luarc.jsonc", ".luacheckrc", ".stylua.toml", "stylua.toml", "selene.toml", "selene.yml", ".git" },
     capabilities = utils.capabilities,

@@ -1,7 +1,7 @@
 local utils = require("tino.lsp.utils")
 
 vim.lsp.config.pylsp = {
-    cmd = { "pylsp" },
+    cmd = { utils.get_executable_path("pylsp") },
     filetypes = { "python" },
     root_markers = { "pyproject.toml", "setup.py", "setup.cfg", "requirements.txt", "Pipfile", ".git" },
     capabilities = utils.capabilities,
@@ -12,22 +12,22 @@ vim.lsp.config.pylsp = {
             plugins = {
                 autopep8 = { enabled = true, },                           -- Disabling requires to use `yapf`
                 flake8 = {
-                    enabled = utils.python.is_executable_installed("flake8"),
-                    executable = utils.python.get_executable_path("flake8"),
+                    enabled = utils.is_executable_installed("flake8"),
+                    executable = utils.get_executable_path("flake8"),
                 },
                 mccabe = {
                     enabled = true,
                     threshold = 15, -- The minimum threshold that triggers warnings about cyclomatic complexity.
                 },
                 pycodestyle = {
-                    enabled = utils.python.is_executable_installed("pycodestyle"),
+                    enabled = utils.is_executable_installed("pycodestyle"),
                     maxLineLength = 100 -- Never above 100.
                 },
                 pydocstyle = { enabled = true, },
                 pyflakes = { enabled = true, },
                 pylint = {
-                    enabled = utils.python.is_executable_installed("pylint"),
-                    executable = utils.python.get_executable_path("pylint"),
+                    enabled = utils.is_executable_installed("pylint"),
+                    executable = utils.get_executable_path("pylint"),
                 },
                 rope_autoimport = { enabled = false, },
                 rope_completion = { enabled = true, },

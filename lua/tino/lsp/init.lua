@@ -28,4 +28,5 @@ vim.lsp.enable({
     "pylsp",   -- python
     -- "rust_analyzer", -- We don't need to enable it here since rustaceanvim takes care of everything
     "json_ls", -- json
+    --"clangd", -- c, cpp
 })

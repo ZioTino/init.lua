@@ -60,14 +60,20 @@ vim.g.clipboard = {
     paste = {
         ["+"] = function()
             if os.getenv('OS') == 'Windows_NT' then
-                return vim.split(vim.fn.system('powershell.exe -NoProfile -command "Get-Clipboard"'), '\n')
+                local out = vim.fn.system('powershell.exe -NoProfile -command "Get-Clipboard"')
+                out = out:gsub('\r\n', '\n'):gsub('\r', '\n')
+                out = out:gsub('\n$', '') -- Strip only the trailing newline added by Get-Clipboard
+                return vim.split(out, '\n')
             else
                 return require("vim.ui.clipboard.osc52").paste("+")
             end
         end,
         ["*"] = function()
             if os.getenv('OS') == 'Windows_NT' then
-                return vim.split(vim.fn.system('powershell.exe -NoProfile -command "Get-Clipboard"'), '\n')
+                local out = vim.fn.system('powershell.exe -NoProfile -command "Get-Clipboard"')
+                out = out:gsub('\r\n', '\n'):gsub('\r', '\n')
+                out = out:gsub('\n$', '') -- Strip only the trailing newline added by Get-Clipboard
+                return vim.split(out, '\n')
             else
                 return require("vim.ui.clipboard.osc52").paste("*")
             end

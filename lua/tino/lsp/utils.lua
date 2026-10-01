@@ -1,15 +1,12 @@
 local cmp_lsp = require("cmp_nvim_lsp")
 
--- On attach for auto formatting on save
-local on_attach = function(_, bufnr)
-    vim.api.nvim_create_autocmd("BufWritePre", {
-        group = "Tino",
-        buffer = bufnr,
-        callback = function()
-            vim.lsp.buf.format({ bufnr = bufnr, async = false })
-        end
-    })
-end
+-- On attach hook.
+--
+-- Format-on-save is owned by conform.nvim (see `tino/lazy/conform.lua`): it runs
+-- clang-format for C/C++ and falls back to LSP formatting for other filetypes.
+-- Formatting here as well would double-format C/C++ buffers, so this hook is
+-- intentionally left empty for per-server customisation.
+local on_attach = function(_, _) end
 
 -- Create capabilities
 local capabilities = vim.tbl_deep_extend(

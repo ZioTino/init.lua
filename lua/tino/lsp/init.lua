@@ -1,6 +1,7 @@
 require("tino.lsp.lua")
 require("tino.lsp.python")
 require("tino.lsp.json")
+require("tino.lsp.c")
 
 -- Configure diagnostics
 vim.diagnostic.config({
@@ -28,5 +29,5 @@ vim.lsp.enable({
     "pylsp",   -- python
     -- "rust_analyzer", -- We don't need to enable it here since rustaceanvim takes care of everything
     "json_ls", -- json
-    --"clangd", -- c, cpp
+    "clangd",  -- c, cpp
 })

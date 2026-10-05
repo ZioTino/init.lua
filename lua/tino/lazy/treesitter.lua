@@ -27,16 +27,11 @@ return {
                     -- `false` will disable the whole extension
                     enable = true,
                     disable = function(lang, buf)
-                        if lang == "html" then
-                            print("disabled")
-                            return true
-                        end
-
-                        local max_filesize = 100 * 1024 -- 100 KB
+                        local max_filesize = 200 * 1024 -- 200 KB
                         local ok, stats = pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(buf))
                         if ok and stats and stats.size > max_filesize then
                             vim.notify(
-                                "File larger than 100KB treesitter disabled for performance",
+                                "File larger than 200KB: treesitter disabled for performance.",
                                 vim.log.levels.WARN,
                                 { title = "Treesitter" }
                             )

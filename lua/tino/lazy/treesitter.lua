@@ -3,7 +3,12 @@ return {
         "nvim-treesitter/nvim-treesitter",
         branch = "main",
         lazy = false, -- the main branch does not support lazy-loading
-        build = ":TSUpdate",
+        build = function()
+            -- Parsers can only be built when the tree-sitter CLI is present.
+            if vim.fn.executable("tree-sitter") == 1 then
+                vim.cmd("TSUpdate")
+            end
+        end,
         config = function()
             -- The main branch always compiles parsers with the `tree-sitter` CLI.
             -- Point it at gcc on Windows if no compiler has been selected.
@@ -13,11 +18,29 @@ return {
 
             require("nvim-treesitter").setup()
 
-            -- Installed asynchronously; already installed parsers are skipped.
-            require("nvim-treesitter").install({
-                "c", "cpp", "lua", "vim", "vimdoc", "query",
-                "python", "rust", "markdown", "markdown_inline", "json",
-            })
+            -- Parsers are compiled with the tree-sitter CLI; without it every
+            -- install attempt fails. Warn once instead of spamming errors.
+            local has_tree_sitter = vim.fn.executable("tree-sitter") == 1
+
+            if has_tree_sitter then
+                -- Installed asynchronously; already installed parsers are skipped.
+                require("nvim-treesitter").install({
+                    "c", "cpp", "lua", "vim", "vimdoc", "query",
+                    "python", "rust", "markdown", "markdown_inline", "json",
+                })
+            else
+                -- Defer until startup is done so the warning is visible.
+                vim.schedule(function()
+                    vim.notify_once(
+                        "tree-sitter CLI not found, so parsers cannot be built.\n"
+                            .. "  Windows: winget install tree-sitter.tree-sitter-cli\n"
+                            .. "  Linux/macOS: install tree-sitter-cli 0.26.1+\n"
+                            .. "Also install a C compiler (gcc/clang), then restart Neovim.",
+                        vim.log.levels.WARN,
+                        { title = "nvim-treesitter" }
+                    )
+                end)
+            end
 
             -- The main branch only ships queries: highlighting, indentation and
             -- injections have to be enabled per buffer.
@@ -44,12 +67,15 @@ return {
 
                     -- No parser installed for this filetype.
                     if not pcall(vim.treesitter.start, buf, lang) then
-                        -- Install it on demand, like the old `auto_install` did.
-                        available_parsers = available_parsers
-                            or require("nvim-treesitter.config").get_available()
-                        if not requested_parsers[lang] and vim.tbl_contains(available_parsers, lang) then
-                            requested_parsers[lang] = true
-                            require("nvim-treesitter").install({ lang })
+                        -- Install it on demand, like the old `auto_install` did
+                        -- (only when the tree-sitter toolchain is available).
+                        if has_tree_sitter then
+                            available_parsers = available_parsers
+                                or require("nvim-treesitter.config").get_available()
+                            if not requested_parsers[lang] and vim.tbl_contains(available_parsers, lang) then
+                                requested_parsers[lang] = true
+                                require("nvim-treesitter").install({ lang })
+                            end
                         end
                         return
                     end

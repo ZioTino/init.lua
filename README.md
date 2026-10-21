@@ -3,6 +3,20 @@ Run command:
 
 Additional needed steps for a complete working environment:
 
+### Neovim and Treesitter
+
+This config targets **Neovim 0.12+** and uses the `main` branch of
+[nvim-treesitter](https://github.com/nvim-treesitter/nvim-treesitter), which
+requires the `tree-sitter` CLI and a C compiler to build parsers:
+
+- `tree-sitter` CLI 0.26.1 or newer
+  - Windows: `winget install tree-sitter.tree-sitter-cli`
+  - Linux: install `tree-sitter-cli` from your package manager
+- a C compiler (`gcc` on Windows/Linux, `clang` on macOS)
+
+After updating the plugin or changing parsers, run `:TSUpdate` (or
+`:TSInstall <lang>` for a single one).
+
 ### Telescope fully enabled
 [fd](https://github.com/sharkdp/fd) needs to be installed:
 

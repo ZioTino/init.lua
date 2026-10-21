@@ -26,7 +26,14 @@ return {
             filters = {
                 git_ignored = false,
                 dotfiles = false
-            }
+            },
+            git = {
+                enable = true,
+                -- nvim-tree kills `git status` after this many ms and disables
+                -- git integration for the session after 5 timeouts.
+                -- The 400ms default is too aggressive for large repositories.
+                timeout = 5000,
+            },
         }
 
         vim.keymap.set("n", "<leader>n", "<Cmd>:NvimTreeFocus<CR>", { silent = true })

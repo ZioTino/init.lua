@@ -1,4 +1,5 @@
--- Conform is a formatter manager: it runs format-on-save.
+-- Conform is a formatter manager. Formatting is manual: <leader>fm formats the
+-- current buffer (or the visual selection); there is no format-on-save.
 --
 -- For C/C++ it runs the `clang-format` binary. clang-format discovers the
 -- nearest `.clang-format` file by walking up the directory tree from the edited
@@ -6,7 +7,7 @@
 -- e.g. `ibcu/.clang-format` is applied to every file in that repository.
 --
 -- For every other filetype it falls back to the language server's own
--- formatting, preserving the previous LSP-based format-on-save behaviour.
+-- formatting.
 return {
     "stevearc/conform.nvim",
     config = function()
@@ -24,13 +25,16 @@ return {
             default_format_opts = {
                 lsp_format = "fallback",
             },
-            -- Format on save: clang-format for C/C++, LSP formatting otherwise.
-            format_on_save = {
-                timeout_ms = 1000,
-                lsp_format = "fallback",
-            },
             -- Don't notify when a buffer simply has no formatter available.
             notify_no_formatters = false,
         })
+
+        -- Format the current buffer, or the selected range in visual mode.
+        vim.keymap.set({ "n", "v" }, "<leader>fm", function()
+            require("conform").format({
+                async = true,
+                lsp_format = "fallback",
+            })
+        end, { desc = "Format buffer/selection" })
     end,
 }

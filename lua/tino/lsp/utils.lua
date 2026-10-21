@@ -2,10 +2,9 @@ local cmp_lsp = require("cmp_nvim_lsp")
 
 -- On attach hook.
 --
--- Format-on-save is owned by conform.nvim (see `tino/lazy/conform.lua`): it runs
--- clang-format for C/C++ and falls back to LSP formatting for other filetypes.
--- Formatting here as well would double-format C/C++ buffers, so this hook is
--- intentionally left empty for per-server customisation.
+-- Formatting is owned by conform.nvim (see `tino/lazy/conform.lua`): <leader>fm
+-- runs clang-format for C/C++ and falls back to LSP formatting for other
+-- filetypes. This hook is intentionally left empty for per-server customisation.
 local on_attach = function(_, _) end
 
 -- Create capabilities

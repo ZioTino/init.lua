@@ -11,7 +11,9 @@ return {
                 enabled = false,
             },
             float = {
-                transparent = true, -- Enable transparent floating windows
+                -- Let the terminal background image show through floats.
+                -- The hover border keeps it readable (see lua/tino/init.lua).
+                transparent = true,
             },
             show_end_of_buffer = true,
             lsp_styles = { -- Handles the style of specific lsp hl groups (see `:h lsp-highlight`).
@@ -36,7 +38,11 @@ return {
             highlight_overrides = {
                 all = function(colors)
                     return {
-                        LineNr = { fg = "#A0A0A0" }
+                        LineNr = { fg = "#A0A0A0" },
+
+                        -- Thin neutral border line; no background fill, so
+                        -- floating views keep their own layout and transparency.
+                        FloatBorder = { fg = "#9a9a9a", bg = "NONE" },
                     }
                 end
             }

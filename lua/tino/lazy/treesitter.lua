@@ -1,11 +1,30 @@
+local MIN_TREE_SITTER = { 0, 26, 1 }
+
+-- The `main` branch compiles parsers with the tree-sitter CLI and needs
+-- 0.26.1+, so an old CLI (e.g. the 0.20.x shipped by some distros) can't be
+-- used even though `tree-sitter` is on PATH.
+local function tree_sitter_version()
+    if vim.fn.executable("tree-sitter") ~= 1 then
+        return nil
+    end
+
+    local out = vim.fn.system({ "tree-sitter", "--version" })
+    local version = out:match("(%d+%.%d+%.%d+)")
+    return version and vim.version.parse(version) or nil
+end
+
+local function supports_tree_sitter(version)
+    return version ~= nil and not vim.version.lt(version, MIN_TREE_SITTER)
+end
+
 return {
     {
         "nvim-treesitter/nvim-treesitter",
         branch = "main",
         lazy = false, -- the main branch does not support lazy-loading
         build = function()
-            -- Parsers can only be built when the tree-sitter CLI is present.
-            if vim.fn.executable("tree-sitter") == 1 then
+            -- Parsers can only be built with a recent enough tree-sitter CLI.
+            if supports_tree_sitter(tree_sitter_version()) then
                 vim.cmd("TSUpdate")
             end
         end,
@@ -16,23 +35,58 @@ return {
                 vim.env.CC = "gcc"
             end
 
-            require("nvim-treesitter").setup()
+            local nvim_treesitter = require("nvim-treesitter")
 
-            -- Parsers are compiled with the tree-sitter CLI; without it every
-            -- install attempt fails. Warn once instead of spamming errors.
-            local has_tree_sitter = vim.fn.executable("tree-sitter") == 1
+            -- The old `master` branch (now archived) does not have `install()`.
+            -- Fail with an actionable message instead of a cryptic error popup.
+            if type(nvim_treesitter.install) ~= "function" then
+                vim.schedule(function()
+                    vim.notify_once(
+                        "nvim-treesitter is not on the 'main' branch (old API detected).\n"
+                            .. "Run :Lazy update nvim-treesitter to switch branches.",
+                        vim.log.levels.ERROR,
+                        { title = "nvim-treesitter" }
+                    )
+                end)
+                return
+            end
+
+            -- nvim-treesitter's `main` branch dropped support for Neovim 0.11.
+            -- Failing here silently would look like broken highlighting, so be
+            -- explicit about the version requirement.
+            if vim.fn.has("nvim-0.12") == 0 then
+                vim.schedule(function()
+                    vim.notify_once(
+                        "nvim-treesitter's 'main' branch requires Neovim 0.12 or newer.",
+                        vim.log.levels.ERROR,
+                        { title = "nvim-treesitter" }
+                    )
+                end)
+                return
+            end
+
+            nvim_treesitter.setup()
+
+            -- Parsers are compiled with the tree-sitter CLI; without a recent
+            -- enough one every install attempt fails. Warn once instead of
+            -- spamming errors.
+            local ts_version = tree_sitter_version()
+            local has_tree_sitter = supports_tree_sitter(ts_version)
 
             if has_tree_sitter then
                 -- Installed asynchronously; already installed parsers are skipped.
-                require("nvim-treesitter").install({
+                nvim_treesitter.install({
                     "c", "cpp", "lua", "vim", "vimdoc", "query",
                     "python", "rust", "markdown", "markdown_inline", "json",
                 })
             else
+                local found = ts_version
+                        and string.format("%d.%d.%d", ts_version.major, ts_version.minor, ts_version.patch)
+                    or "not found"
                 -- Defer until startup is done so the warning is visible.
                 vim.schedule(function()
                     vim.notify_once(
-                        "tree-sitter CLI not found, so parsers cannot be built.\n"
+                        "tree-sitter CLI " .. found .. " is unusable; 0.26.1 or newer is required.\n"
                             .. "  Windows: winget install tree-sitter.tree-sitter-cli\n"
                             .. "  Linux/macOS: install tree-sitter-cli 0.26.1+\n"
                             .. "Also install a C compiler (gcc/clang), then restart Neovim.",

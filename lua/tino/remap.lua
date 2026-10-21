@@ -6,8 +6,11 @@ vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv")
 vim.keymap.set("n", "n", "nzzzv")
 vim.keymap.set("n", "N", "Nzzzv")
 
--- Greatest remap ever
-vim.keymap.set("x", "<leader>p", "\"_dP")
+-- Greatest remap ever: paste over a selection without putting the replaced
+-- text in the clipboard. `P` in Visual mode does this natively (it doesn't
+-- touch the default/unnamed/clipboard registers) and is repeatable with `.`.
+vim.keymap.set("x", "p", "P", { desc = "Paste over selection without clobbering the clipboard" })
+vim.keymap.set("x", "<leader>p", "P", { desc = "Paste over selection without clobbering the clipboard" })
 
 -- Next greatest remap ever : asbjornHaland
 vim.keymap.set({ "n", "v" }, "<leader>y", [["+y]])

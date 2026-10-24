@@ -74,6 +74,25 @@ If working with python venv:
 export PYTHONPATH="$PYTHONPATH:$VIRTUAL_ENV/lib/python<python-version>/site-packages"
 ```
 
+### Jupyter notebooks (jove.nvim)
+
+Jove needs `jupytext` and a Python that can import `jupyter_client` and
+`ipykernel`. On Debian/Ubuntu the Python modules are packaged, but `jupytext`
+is not:
+
+```bash
+sudo apt install python3-jupyter-client python3-ipykernel pipx
+pipx install jupytext
+```
+
+If the Jupyter stack lives in a virtualenv or conda environment, point jove at
+its interpreter by adding `bridge_python = "<path>/bin/python"` to the
+`jove.nvim` opts in `lua/tino/lazy/jove.lua`, and make sure its `bin` directory
+is on `$PATH` so `jupytext` can be found.
+
+Verify the setup with `:checkhealth jove`. Do not install `jupytext.nvim`: it
+and jove both register `BufReadCmd` for `*.ipynb`.
+
 ### Rust
 
 Install `codelldb` for debugging:

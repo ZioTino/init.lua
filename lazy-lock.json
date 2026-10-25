@@ -42,6 +42,5 @@
   "toggleterm.nvim": { "branch": "main", "commit": "9a88eae817ef395952e08650b3283726786fb5fb" },
   "undotree": { "branch": "master", "commit": "6fa6b57cda8459e1e4b2ca34df702f55242f4e4d" },
   "vim-fugitive": { "branch": "master", "commit": "3b753cf8c6a4dcde6edee8827d464ba9b8c4a6f0" },
-  "vim-tidal": { "branch": "master", "commit": "e440fe5bdfe07f805e21e6872099685d38e8b761" },
-  "whisk.nvim": { "branch": "main", "commit": "a5d122ed7c08dcb8366ddc58b44df9458a263d23" }
+  "vim-tidal": { "branch": "master", "commit": "e440fe5bdfe07f805e21e6872099685d38e8b761" }
 }
